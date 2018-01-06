@@ -173,3 +173,33 @@ class IndividualNumberContainer() {
         }
     }
 }
+class ScrumContainer {
+    constructor() {
+        this.snc = new ScrumNumberContainer()
+        this.inc = new IndividualNumberContainer()
+        this.animator = new Animator()
+        this.state = new State()
+    }
+    handleAnimation() {
+        this.state.addAnimation(this.snc.update,()=>{
+            this.inc.setVisibility()
+            this.snc.stop()
+            this.animator.stop()
+        })
+        this.state.addAnimation(this.inc.update,()=>{
+            this.inc.stop()
+            this.animator.stop()
+        })
+    }
+    handleTap() {
+        const startcb = () => {
+            this.animator.startUpdating(this.state.update,this.state.startUpdating())
+        }
+        this.snc.handleTap(startcb)
+        this.snc.handleTap(startcb)
+
+    }
+}
+const scrumContainer = new ScrumContainer()
+scrumContainer.handleAnimation()
+scrumContainer.handleTap()
