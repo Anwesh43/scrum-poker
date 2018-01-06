@@ -53,3 +53,36 @@ class ScrumNumberContainer {
         this.container.style.transform = `rotateY(${180*scale})`
     }
 }
+class State {
+    constructor() {
+        this.scale = 0
+        this.prevScale = 0
+        this.prevDir = 1
+        this.j = 0
+        this.dir = 0
+        this.animations = []
+    }
+    addAnimation(cb) {
+        this.animations.push(cb)
+    }
+    update() {
+        this.scale += this.dir * 0.1
+        this.animations[this.j](this.scale)
+        if(Math.abs(this.scale - this.prevScale) > 1) {
+            this.scale = this.prevScale
+            this.j+=this.dir
+            this.dir = 0
+            if(this.j == this.animations.length || this.j == -1) {
+                this.scale += this.prevDir
+                this.prevScale = this.scale
+                this.prevDir *= -1
+                this.j += this.prevDir
+            }
+        }
+    }
+    startUpdating(startcb) {
+        if(this.dir == 0) {
+            this.dir =this.prevDir
+        }
+    }
+}
