@@ -21,6 +21,7 @@ class ScrumNumber {
     handleTap(cb) {
         this.div.onclick = (event) => {
             cb(this.number)
+            event.stopPropagation()
         }
     }
 }
@@ -51,6 +52,12 @@ class ScrumNumberContainer {
     update(scale) {
         this.container.style.transform = this.container.style.transform || this.container.style.webkitTransform || this.container.style.mozTransform
         this.container.style.transform = `rotateY(${180*scale})`
+    }
+    stop() {
+        this.container.style.visibility = 'hidden'
+    }
+    start() {
+        this.container.style.visibility = 'visible'
     }
 }
 class State {
@@ -109,6 +116,60 @@ class Animator {
             this.animated = false
             clearInterval(this.interval)
             stopcb()
+        }
+    }
+}
+class IndividualNumberContainer() {
+    constructor() {
+        this.createDivs()
+    }
+    createDivs() {
+        this.div = document.createElement('div')
+        this.div.style.color = 'white'
+        const size = Math.min(w,h)/2
+        this.div.style.width = size
+        this.div.style.height = size
+        this.div.style.position = 'absolute'
+        this.div.style.borderRadius = Math.min(w,h)/5
+        this.div.style.background = '#283593'
+        this.div.style.fontSize = size/4
+        this.div.style.top = h/2-size/2
+        this.div.style.left = h/2-size/2
+        this.div = document.createElement('div')
+        this.div.style.color = 'white'
+        const size = Math.min(w,h)/2
+        this.container = document.createElement('div')
+        this.container.style.width = w
+        this.container.style.height = h
+        this.container.style.position = 'absolute'
+        this.container.style.background = '#212121'
+        this.container.style.top = 0
+        this.container.style.left = 0
+        document.body.appendChild(this.container)
+        this.container.appendChild(this.div)
+        this.container.style.visibility = 'hidden'
+    }
+    update(scale) {
+        this.div.style.transform = this.div.style.transform || this.div.style.webkitTransform || this.div.style.mozTransform || this.div.style.oTransform
+        this.div.style.transform = `rotateY(${180*(1-scale)})`
+    }
+    setNumber(number) {
+        this.div.innerHTML = `${number}`
+    }
+    stop() {
+        this.container.style.visibility = 'hidden'
+    }
+    start() {
+        this.div.style.visibility = 'visible'
+    }
+    setVisibility() {
+        this.container.style.visibility = 'visible'
+    }
+    handleTap(cb) {
+        this.container.onclick = (event) => {
+            event.stopPropagation()
+            cb()
+            this.start()
         }
     }
 }
