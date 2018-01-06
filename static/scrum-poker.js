@@ -62,14 +62,19 @@ class State {
         this.dir = 0
         this.animations = []
     }
-    addAnimation(cb) {
-        this.animations.push(cb)
+    addAnimation(updatecb,stopcb) {
+        this.animations.push(updatecb,stopcb)
     }
     update() {
         this.scale += this.dir * 0.1
-        this.animations[this.j](this.scale)
+        if(this.animations[j] && this.animations[j].updatecb) {
+            this.animations[this.j].updatecb(this.scale)
+        }
         if(Math.abs(this.scale - this.prevScale) > 1) {
             this.scale = this.prevScale
+            if(this.animations[j] && this.animations[j].stopcb) {
+                this.animations[this.j].stopcb()
+            }
             this.j+=this.dir
             this.dir = 0
             if(this.j == this.animations.length || this.j == -1) {
@@ -80,9 +85,30 @@ class State {
             }
         }
     }
-    startUpdating(startcb) {
+    startUpdating() {
         if(this.dir == 0) {
-            this.dir =this.prevDir
+            this.dir = this.prevDir
+        }
+    }
+}
+class Animator {
+    constructor() {
+        this.animated = false
+    }
+    startUpdating(startcb,updatecb) {
+        if(!this.animated) {
+            this.animated = true
+            startcb()
+            this.interval = setInterval(()=>{
+                updatecb()
+            },50)
+        }
+    }
+    stop(stopcb) {
+        if(this.animated) {
+            this.animated = false
+            clearInterval(this.interval)
+            stopcb()
         }
     }
 }
